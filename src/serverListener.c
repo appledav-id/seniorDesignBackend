@@ -62,7 +62,7 @@ char* initServerListener(int portNum)
     len = sizeof(cli);
 
     // Accept the data packet from client and verification
-    connfd = accept(sockfd, (SA *)&cli, &len);
+    connfd = accept(sockfd, (SA *)&cli, (socklen_t*)&len);
     if (connfd < 0)
     {
         printf("server accept failed...\n");

@@ -5,13 +5,18 @@
 #include "../inc/serverListener.h"
 #include "../inc/ngspiceSim.h"
 
-
-#define PORT 8080
+int portNum;
 
 int main(int argc, char** argv)
 {
+    if(argc > 1)
+        portNum = atoi(argv[1]);
+    else
+        portNum = 8080;
+    
+    //printf("PortNum: %d\n", portNum);
     /* begin with setting up the socket and returning the filename to be passed to ngspice */
-    //char* fileName = initServerListener(PORT);
+    //char* fileName = initServerListener(portNum);
 
     /* init the simulation engine */
     initNgspice();
