@@ -11,11 +11,18 @@
 
 #define SA struct sockaddr
 
+/* convenience function to cleanup server init */
+static void die(const char* errorString, int errNo)
+{
+    printf("[DIE]: %s\n", errorString);
+    exit(errNo);
+}
+
 char* readFromSocket(int connfd)
 {
     char* buffer = malloc(sizeof(char) * 256);
     if(read(connfd, buffer, sizeof(buffer)) == -1)
-        exit(1);   
+        die("Read from connfd failed", -1);
 
     printf("%s\n", buffer);
     return buffer;
@@ -29,13 +36,11 @@ char* initServerListener(int portNum)
 
     // socket create and verification
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (sockfd == -1)
-    {
-        printf("socket creation failed...\n");
-        exit(0);
-    }
-    else
-        printf("Socket successfully created..\n");
+    if (sockfd == -1) 
+        die("Socked creation failed", -1);
+        
+    printf("Socket successfully created..\n");
+
     bzero(&servaddr, sizeof(servaddr));
 
     // assign IP, portNum
@@ -45,46 +50,37 @@ char* initServerListener(int portNum)
 
     // Binding newly created socket to given IP and verification
     if ((bind(sockfd, (SA *)&servaddr, sizeof(servaddr))) != 0)
-    {
-        printf("socket bind failed...\n");
-        exit(0);
-    }
-    else
-        printf("Socket successfully binded..\n");
+        die("Socket bind failed", -1);
+    
+    printf("Socket successfully binded..\n");
 
     // Now server is ready to listen and verification
     if ((listen(sockfd, 5)) != 0)
-    {
-        printf("Listen failed...\n");
-        exit(0);
-    }
-    else
-        printf("Server listening..\n");
+        die("Listen failed", -1);
+    
+    printf("Server listening..\n");
     len = sizeof(cli);
 
     // Accept the data packet from client and verification
     connfd = accept(sockfd, (SA *)&cli, (socklen_t*)&len);
     if (connfd < 0)
-    {
-        printf("server accept failed...\n");
-        exit(0);
-    }
-    else
-        printf("server accept the client...\n");
+        die("Server accept failed", -1);
+        
+    printf("server accept the client...\n");
 
 
     char* buffer = readFromSocket(connfd);
     if(!buffer)
-        return NULL;
-    
+        die("Buffer returned NULL", -1);
+
     FILE* fp = fopen("Netlist.net", "w+");
     if(!fp)
-        return NULL;
+        die("Unable to create file", -2);
     
     /* write to the file to be used later*/
     if(fwrite(buffer, sizeof(char), strlen(buffer), fp) != strlen(buffer))
-        return NULL;
-    
+        die("Write to file failed", -2);
+     
     close(sockfd);
 
     /* I hate this but idk what else to put here */
