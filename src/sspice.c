@@ -16,12 +16,12 @@ int main(int argc, char** argv)
     
     //printf("PortNum: %d\n", portNum);
     /* begin with setting up the socket and returning the filename to be passed to ngspice */
-    //char* fileName = initServerListener(portNum);
+    char* fileName = initServerListener(portNum);
 
     /* init the simulation engine */
     initNgspice();
 
     /* after init, we are free to simulate */
     // TODO: find a way to get back the output choice 
-    simNetlistFromSocket("../netlist.net", "node2");
+    simNetlistFromSocket("../netlist.net", "node3");
 }

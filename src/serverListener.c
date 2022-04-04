@@ -17,6 +17,7 @@ char* readFromSocket(int connfd)
     if(read(connfd, buffer, sizeof(buffer)) == -1)
         exit(1);   
 
+    printf("%s\n", buffer);
     return buffer;
 }
 
@@ -81,7 +82,7 @@ char* initServerListener(int portNum)
         return NULL;
     
     /* write to the file to be used later*/
-    if(fwrite(buffer, sizeof(char), sizeof(buffer), fp) != sizeof(buffer))
+    if(fwrite(buffer, sizeof(char), strlen(buffer), fp) != strlen(buffer))
         return NULL;
     
     close(sockfd);
