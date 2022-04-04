@@ -5,6 +5,6 @@
 
 int initNgspice();
 
-int simNetlistFromSocket(char *netlistFileName, char *outputChoice);
+int simNetlistFromSocket(char *netlistString);
 
 #endif

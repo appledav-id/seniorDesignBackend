@@ -20,8 +20,9 @@ static void die(const char* errorString, int errNo)
 
 char* readFromSocket(int connfd)
 {
-    char* buffer = malloc(sizeof(char) * 256);
-    if(read(connfd, buffer, sizeof(buffer)) == -1)
+    char* buffer = malloc(sizeof(char) * MAX_BUFFER_LENGTH);
+
+    if(read(connfd, buffer, MAX_BUFFER_LENGTH) == -1)
         die("Read from connfd failed", -1);
 
     printf("%s\n", buffer);
@@ -73,16 +74,7 @@ char* initServerListener(int portNum)
     if(!buffer)
         die("Buffer returned NULL", -1);
 
-    FILE* fp = fopen("Netlist.net", "w+");
-    if(!fp)
-        die("Unable to create file", -2);
-    
-    /* write to the file to be used later*/
-    if(fwrite(buffer, sizeof(char), strlen(buffer), fp) != strlen(buffer))
-        die("Write to file failed", -2);
-     
     close(sockfd);
 
-    /* I hate this but idk what else to put here */
-    return "Netlist.net";
+    return buffer; 
 }
