@@ -31,7 +31,7 @@ char* readFromSocket(int connfd)
 }
 
 // Driver function
-char* initServerListener(const int portNum, char** clientIP, int* clientPort, int* connfd)
+char* initServerListener(const int portNum, int* connfd)
 {
     int sockfd, len;
     struct sockaddr_in servaddr, cli;
@@ -69,10 +69,10 @@ char* initServerListener(const int portNum, char** clientIP, int* clientPort, in
         die("Server accept failed", -1);
     
     printf("server accept the client...\n");
-    *clientIP = inet_ntoa(cli.sin_addr);
-    *clientPort = ntohs(cli.sin_port);
+    //*clientIP = inet_ntoa(cli.sin_addr);
+    //*clientPort = ntohs(cli.sin_port);
 
-    printf("[DEBUG]: Client ipaddr: %s\nClient Port: %d\n", *clientIP, *clientPort);
+    //printf("[DEBUG]: Client ipaddr: %s\nClient Port: %d\n", *clientIP, *clientPort);
 
 
     char* buffer = readFromSocket(*connfd);
@@ -85,9 +85,9 @@ char* initServerListener(const int portNum, char** clientIP, int* clientPort, in
 }
 
 
-int returnResults(const char* fileName, const char* clientIpAddr, int clientPort, int connfd)
+int returnResults(const char* fileName, int connfd)
 {
-    if(!fileName || !clientIpAddr || clientPort <= 0)
+    if(!fileName  /*!clientIpAddr || clientPort <= 0 */)
         return -1;
     
     FILE* fp = fopen(fileName, "r+");
