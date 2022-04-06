@@ -5,6 +5,7 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <arpa/inet.h>
 #include <unistd.h>
 
 #include "../inc/serverListener.h"
@@ -30,9 +31,9 @@ char* readFromSocket(int connfd)
 }
 
 // Driver function
-char* initServerListener(int portNum)
+char* initServerListener(const int portNum, char** clientIP, int* clientPort, int* connfd)
 {
-    int sockfd, connfd, len;
+    int sockfd, len;
     struct sockaddr_in servaddr, cli;
 
     // socket create and verification
@@ -63,18 +64,55 @@ char* initServerListener(int portNum)
     len = sizeof(cli);
 
     // Accept the data packet from client and verification
-    connfd = accept(sockfd, (SA *)&cli, (socklen_t*)&len);
-    if (connfd < 0)
+    *connfd = accept(sockfd, (SA *)&cli, (socklen_t*)&len);
+    if (*connfd < 0)
         die("Server accept failed", -1);
-        
+    
     printf("server accept the client...\n");
+    *clientIP = inet_ntoa(cli.sin_addr);
+    *clientPort = ntohs(cli.sin_port);
+
+    printf("[DEBUG]: Client ipaddr: %s\nClient Port: %d\n", *clientIP, *clientPort);
 
 
-    char* buffer = readFromSocket(connfd);
+    char* buffer = readFromSocket(*connfd);
     if(!buffer)
         die("Buffer returned NULL", -1);
 
-    close(sockfd);
+    //close(sockfd);
 
     return buffer; 
+}
+
+
+int returnResults(const char* fileName, const char* clientIpAddr, int clientPort, int connfd)
+{
+    if(!fileName || !clientIpAddr || clientPort <= 0)
+        return -1;
+    
+    FILE* fp = fopen(fileName, "r+");
+    if(!fp)
+    {
+        printf("can't open file");
+        return -1;
+    }
+    
+
+    int i = 0;
+    char* buffer = malloc(sizeof(char) * 64);
+    char ch;
+
+    while((ch = fgetc(fp)) != EOF)
+    {
+        buffer[i] = ch;
+        i++;
+    }
+    
+    printf("Writing to buffer right now: %s\n", buffer);
+    write(connfd, buffer, strlen(buffer));
+
+
+    fclose(fp);
+    close(connfd);
+    return 0;
 }

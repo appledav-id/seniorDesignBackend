@@ -14,14 +14,26 @@ int main(int argc, char** argv)
     else
         portNum = 8080;
     
+    char* clientIP = malloc(sizeof(char) * 16);
+    int* clientPort;
+    int* connfd = malloc(sizeof(int));
+    
     //printf("PortNum: %d\n", portNum);
     /* begin with setting up the socket and returning the filename to be passed to ngspice */
-    char* netlistString = initServerListener(portNum);
+    char* netlistString = initServerListener(portNum, &clientIP, clientPort, connfd);
 
     /* init the simulation engine */
     initNgspice();
 
     /* after init, we are free to simulate */
-    // TODO: find a way to get back the output choice 
     simNetlistFromSocket(netlistString);
+    
+    if(returnResults("results.raw", clientIP, *clientPort, *connfd) == 0)
+        return 0;
+    else
+    {
+        close(*connfd);
+        printf("Failed to return results to user...\nExiting");
+        exit(-1);
+    }
 }
