@@ -13,4 +13,4 @@ fi
 cd build
 make clean 
 make 
-./sspice 23000
+./sspice 

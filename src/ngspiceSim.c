@@ -17,6 +17,9 @@ static void printFunction(char *string, int id, void *retPtr)
         {
             printf("Found %s\n", gOutput);
 
+	    //char* stringWithNewLine = malloc(sizeof(char) * 64);
+	    //snprintf(stringWithNewLine, 64, "%s\n", string);
+
             FILE* fp = fopen("results.raw", "w+");
             fwrite(string, sizeof(char), strlen(string), fp);
             fclose(fp);

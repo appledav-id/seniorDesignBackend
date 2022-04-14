@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.16)
 project(sspice)
 
 set(CMAKE_C_FLAGS "-std=c99")
@@ -10,7 +10,7 @@ include_directories("./include")
 #add_library(simulator SHARED src/ngspiceSim.c)
 
 add_library(ngspice SHARED IMPORTED)
-set_target_properties(ngspice PROPERTIES IMPORTED_LOCATION "/usr/local/lib/libngspice.dylib")
+set_target_properties(ngspice PROPERTIES IMPORTED_LOCATION "/usr/local/lib/libngspice.so")
 
 # group up all the c files
 FILE(GLOB csources src/*.c)

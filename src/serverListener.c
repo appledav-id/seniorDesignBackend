@@ -3,8 +3,11 @@
 #include <netinet/in.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <arpa/inet.h>
 #include <unistd.h>
 
@@ -90,29 +93,45 @@ int returnResults(const char* fileName, int connfd)
     if(!fileName  /*!clientIpAddr || clientPort <= 0 */)
         return -1;
     
-    FILE* fp = fopen(fileName, "r+");
-    if(!fp)
+    int fd = open(fileName, O_RDONLY);
+    //FILE* fp = fopen(fileName, "r+");
+    if(!fd)
     {
         printf("can't open file");
         return -1;
     }
     
+    printf("Here\n");
 
     int i = 0;
     char* buffer = malloc(sizeof(char) * 64);
     char ch;
-
+    
+    while(read(fd, &ch, 1) == 1)
+    {
+    	buffer[i] = ch;
+	i++;
+    }
+#if 0
+    while(fscanf(fp, "%c", buffer) == 1)
+    {
+    	buffer++;
+    }
+ 
+    
     while((ch = fgetc(fp)) != EOF)
     {
-        buffer[i] = ch;
-        i++;
+	printf("%c", ch);
+	buffer[i] = ch;
+	i++;
     }
-    
-    printf("Writing to buffer right now: %s\n", buffer);
+#endif
+
+    printf("\nWriting to buffer right now: %s\n", buffer);
     write(connfd, buffer, strlen(buffer));
 
-
-    fclose(fp);
+    close(fd);
+    //fclose(fp);
     close(connfd);
     return 0;
 }
